@@ -11,6 +11,27 @@ class KeyEvent: NSObject {
         self.watch()
     }
 
+    func pressKey(symbol: String) {
+        var virtualKey:CGKeyCode = 1;
+        if (symbol == "←") {
+            virtualKey = 0x33; // Backspace
+        }
+        let char:Array<UniChar> = Array(symbol.utf16);
+        let eventKeyDown = CGEvent(keyboardEventSource: nil, virtualKey: virtualKey, keyDown: true)!
+        let eventKeyUp = CGEvent(keyboardEventSource: nil, virtualKey: virtualKey, keyDown: false)!
+        eventKeyDown.flags = CGEventFlags(
+           rawValue: eventKeyDown.flags.rawValue | self.VNK_MAGIC_NUMBER
+        )
+        eventKeyUp.flags = CGEventFlags(
+           rawValue: eventKeyUp.flags.rawValue | self.VNK_MAGIC_NUMBER
+        )
+        eventKeyDown.keyboardSetUnicodeString(stringLength: 1, unicodeString: char)
+        eventKeyUp.keyboardSetUnicodeString(stringLength: 1, unicodeString: char)
+
+        eventKeyDown.post(tap: CGEventTapLocation.cghidEventTap)
+        eventKeyUp.post(tap: CGEventTapLocation.cghidEventTap)
+    }
+
     func watch() {
         let eventMaskList = [
             CGEventType.keyDown.rawValue,
@@ -109,19 +130,8 @@ class KeyEvent: NSObject {
         //     return nil
         // }
         //
-        let eventKeyDown = CGEvent(keyboardEventSource: nil, virtualKey: 1, keyDown: true)!
-        let eventKeyUp = CGEvent(keyboardEventSource: nil, virtualKey: 1, keyDown: false)!
-        eventKeyDown.flags = CGEventFlags(
-           rawValue: eventKeyDown.flags.rawValue | self.VNK_MAGIC_NUMBER
-        )
-        eventKeyUp.flags = CGEventFlags(
-           rawValue: eventKeyUp.flags.rawValue | self.VNK_MAGIC_NUMBER
-        )
-        let char:Array<UniChar> = Array("đế".utf16);
-        eventKeyDown.keyboardSetUnicodeString(stringLength: 2, unicodeString: char)
-        eventKeyUp.keyboardSetUnicodeString(stringLength: 2, unicodeString: char)
-        eventKeyDown.post(tap: CGEventTapLocation.cghidEventTap)
-        eventKeyUp.post(tap: CGEventTapLocation.cghidEventTap)
+        self.pressKey(symbol: "←");
+        self.pressKey(symbol: "đ");
         return Unmanaged.passUnretained(event)
     }
 
