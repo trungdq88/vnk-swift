@@ -58,30 +58,27 @@ class KeyEvent: NSObject {
     }
 
     func eventCallback(proxy: CGEventTapProxy, type: CGEventType, event: CGEvent) -> Unmanaged<CGEvent>? {
-      print("Good")
-        return Unmanaged.passUnretained(event)
+        switch type {
+        case CGEventType.flagsChanged:
+            let keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
 
-        // switch type {
-        // case CGEventType.flagsChanged:
-        //     let keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
-        //
-        //     if modifierMasks[keyCode] == nil {
-        //         return Unmanaged.passUnretained(event)
-        //     }
-        //     return event.flags.rawValue & modifierMasks[keyCode]!.rawValue != 0 ?
-        //         modifierKeyDown(event) : modifierKeyUp(event)
-        //
-        // case CGEventType.keyDown:
-        //     return keyDown(event)
-        //
-        // case CGEventType.keyUp:
-        //     return keyUp(event)
-        //
-        // default:
-        //     self.keyCode = nil
-        //
-        //     return Unmanaged.passUnretained(event)
-        // }
+            if modifierMasks[keyCode] == nil {
+                return Unmanaged.passUnretained(event)
+            }
+            return event.flags.rawValue & modifierMasks[keyCode]!.rawValue != 0 ?
+                modifierKeyDown(event) : modifierKeyUp(event)
+
+        case CGEventType.keyDown:
+            return keyDown(event)
+
+        case CGEventType.keyUp:
+            return keyUp(event)
+
+        default:
+            self.keyCode = nil
+
+            return Unmanaged.passUnretained(event)
+        }
     }
 
     func keyDown(_ event: CGEvent) -> Unmanaged<CGEvent>? {
