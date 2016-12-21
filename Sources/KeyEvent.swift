@@ -82,9 +82,9 @@ class KeyEvent: NSObject {
 
     func eventCallback(proxy: CGEventTapProxy, type: CGEventType, event: CGEvent) -> Unmanaged<CGEvent>? {
 
-        // Gate way to exit in case we get our whole keyboard stuck
+        // Gateway to exit in case we get our whole keyboard stuck
         let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
-        if keyCode == 12 {
+        if keyCode == 12 { // Q key (or ' key on Drovak)
             print("Exit on purpose")
             exit(0)
         }
@@ -94,78 +94,60 @@ class KeyEvent: NSObject {
             return Unmanaged.passUnretained(event);
         }
 
-        print("A");
+        let symbols:String = keyMapping.map(type: type, event: event);
 
-        switch type {
-        case CGEventType.keyDown:
-            return keyDown(event)
+        print(symbols)
 
-        // case CGEventType.keyUp:
-        //     return keyUp(event)
-
-        default:
-            self.keyCode = nil
-
+        if symbols.characters.count == 0 {
+            print("Keep it")
             return Unmanaged.passUnretained(event)
-        }
-    }
-
-    func keyDown(_ event: CGEvent) -> Unmanaged<CGEvent>? {
-        #if DEBUG
-            // print("keyCode: \(KeyboardShortcut(event).keyCode)")
-             print(KeyboardShortcut(event).toString())
-        #endif
-
-        self.keyCode = nil
-
-        // if hasConvertedEvent(event) {
-        //     if let event = getConvertedEvent(event) {
-        //         return Unmanaged.passUnretained(event)
-        //     }
-        //     return nil
-        // }
-        //
-        self.pressKey(symbol: self.BACKSPACE_SPECIAL_CHAR);
-        self.pressKey(symbol: "đ");
-        return Unmanaged.passUnretained(event)
-    }
-
-    func keyUp(_ event: CGEvent) -> Unmanaged<CGEvent>? {
-        self.keyCode = nil
-
-        if hasConvertedEvent(event) {
-            if let event = getConvertedEvent(event) {
-                return Unmanaged.passUnretained(event)
+        } else if symbols.characters.count == 1 {
+            self.pressKey(symbol: symbols)
+        } else if symbols.characters.count > 1 {
+            for char in symbols.characters {
+                self.pressKey(symbol: String(char))
             }
-            return nil
         }
 
-        return Unmanaged.passUnretained(event)
+        return nil
     }
 
-    func modifierKeyDown(_ event: CGEvent) -> Unmanaged<CGEvent>? {
-        #if DEBUG
-            print(KeyboardShortcut(event).toString())
-        #endif
+    // func keyUp(_ event: CGEvent) -> Unmanaged<CGEvent>? {
+    //     self.keyCode = nil
+    //
+    //     if hasConvertedEvent(event) {
+    //         if let event = getConvertedEvent(event) {
+    //             return Unmanaged.passUnretained(event)
+    //         }
+    //         return nil
+    //     }
+    //
+    //     return Unmanaged.passUnretained(event)
+    // }
+    //
+    // func modifierKeyDown(_ event: CGEvent) -> Unmanaged<CGEvent>? {
+    //     #if DEBUG
+    //         print(KeyboardShortcut(event).toString())
+    //     #endif
+    //
+    //     self.keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
+    //
+    //     return Unmanaged.passUnretained(event)
+    // }
+    //
+    // func modifierKeyUp(_ event: CGEvent) -> Unmanaged<CGEvent>? {
+    //     // if self.keyCode == CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode)) {
+    //     //     if let convertedEvent = getConvertedEvent(event) {
+    //     //         KeyboardShortcut(convertedEvent).postEvent()
+    //     //     }
+    //     // }
+    //
+    //     self.keyCode = nil
+    //
+    //     return Unmanaged.passUnretained(event)
+    // }
 
-        self.keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
-
-        return Unmanaged.passUnretained(event)
-    }
-
-    func modifierKeyUp(_ event: CGEvent) -> Unmanaged<CGEvent>? {
-        // if self.keyCode == CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode)) {
-        //     if let convertedEvent = getConvertedEvent(event) {
-        //         KeyboardShortcut(convertedEvent).postEvent()
-        //     }
-        // }
-
-        self.keyCode = nil
-
-        return Unmanaged.passUnretained(event)
-    }
-
-    func hasConvertedEvent(_ event: CGEvent, keyCode: CGKeyCode? = nil, keyDown: Bool = false) -> Bool {
+    // func hasConvertedEvent(_ event: CGEvent, keyCode: CGKeyCode? = nil, keyDown: Bool = false) -> Bool {
         // let event = event.type.rawValue == UInt32(NX_SYSDEFINED) ?
         //     CGEvent(keyboardEventSource: nil, virtualKey: 0, keyDown: keyDown)! : event
         //
@@ -180,9 +162,9 @@ class KeyEvent: NSObject {
         //     }
         // }
         // hasConvertedEventLog = nil
-        return true
-    }
-    func getConvertedEvent(_ event: CGEvent, keyCode: CGKeyCode? = nil, keyDown: Bool = false) -> CGEvent? {
+        //     return true
+    // }
+    // func getConvertedEvent(_ event: CGEvent, keyCode: CGKeyCode? = nil, keyDown: Bool = false) -> CGEvent? {
         // let event = event.type.rawValue == UInt32(NX_SYSDEFINED) ?
         //     CGEvent(keyboardEventSource: nil, virtualKey: 0, keyDown: keyDown)! : event
         //
@@ -214,19 +196,19 @@ class KeyEvent: NSObject {
         //         }
         //     }
         // }
-        return keyMapping.map(event: event)
-    }
+        // return keyMapping.map(event: event)
+    // }
 }
 
-let modifierMasks: [CGKeyCode: CGEventFlags] = [
-    54: CGEventFlags.maskCommand,
-    55: CGEventFlags.maskCommand,
-    56: CGEventFlags.maskShift,
-    60: CGEventFlags.maskShift,
-    59: CGEventFlags.maskControl,
-    62: CGEventFlags.maskControl,
-    58: CGEventFlags.maskAlternate,
-    61: CGEventFlags.maskAlternate,
-    63: CGEventFlags.maskSecondaryFn,
-    57: CGEventFlags.maskAlphaShift
-]
+// let modifierMasks: [CGKeyCode: CGEventFlags] = [
+//     54: CGEventFlags.maskCommand,
+//     55: CGEventFlags.maskCommand,
+//     56: CGEventFlags.maskShift,
+//     60: CGEventFlags.maskShift,
+//     59: CGEventFlags.maskControl,
+//     62: CGEventFlags.maskControl,
+//     58: CGEventFlags.maskAlternate,
+//     61: CGEventFlags.maskAlternate,
+//     63: CGEventFlags.maskSecondaryFn,
+//     57: CGEventFlags.maskAlphaShift
+// ]
