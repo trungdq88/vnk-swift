@@ -2,6 +2,7 @@ import Cocoa
 
 class KeyEvent: NSObject {
     var VNK_MAGIC_NUMBER: UInt64 = 536870912;
+    var BACKSPACE_SPECIAL_CHAR: String = "←";
     var keyCode: CGKeyCode? = nil
     // var hasConvertedEventLog: KeyMapping? = nil
 
@@ -13,7 +14,7 @@ class KeyEvent: NSObject {
 
     func pressKey(symbol: String) {
         var virtualKey:CGKeyCode = 1;
-        if (symbol == "←") {
+        if (symbol == self.BACKSPACE_SPECIAL_CHAR) {
             virtualKey = 0x33; // Backspace
         }
         let char:Array<UniChar> = Array(symbol.utf16);
@@ -130,7 +131,7 @@ class KeyEvent: NSObject {
         //     return nil
         // }
         //
-        self.pressKey(symbol: "←");
+        self.pressKey(symbol: self.BACKSPACE_SPECIAL_CHAR);
         self.pressKey(symbol: "đ");
         return Unmanaged.passUnretained(event)
     }
