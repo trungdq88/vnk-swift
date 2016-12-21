@@ -2,22 +2,21 @@ import Cocoa
 
 class KeyEvent: NSObject {
     var VNK_MAGIC_NUMBER: UInt64 = 536870912;
-    var BACKSPACE_SPECIAL_CHAR: String = "←";
+    var BACKSPACE_SPECIAL_CHAR: UniChar = Array("←".utf16)[0];
     var keyCode: CGKeyCode? = nil
     // var hasConvertedEventLog: KeyMapping? = nil
 
     override init() {
         super.init()
-
         self.watch()
     }
 
-    func pressKey(symbol: String) {
+    func pressKey(symbol: UniChar) {
         var virtualKey:CGKeyCode = 1;
         if (symbol == self.BACKSPACE_SPECIAL_CHAR) {
             virtualKey = 0x33; // Backspace
         }
-        let char:Array<UniChar> = Array(symbol.utf16);
+        let char:Array<UniChar> = [symbol];
         let eventKeyDown = CGEvent(keyboardEventSource: nil, virtualKey: virtualKey, keyDown: true)!
         let eventKeyUp = CGEvent(keyboardEventSource: nil, virtualKey: virtualKey, keyDown: false)!
         eventKeyDown.flags = CGEventFlags(
@@ -94,121 +93,17 @@ class KeyEvent: NSObject {
             return Unmanaged.passUnretained(event);
         }
 
-        let symbols:String = keyMapping.map(type: type, event: event);
+        let symbols:Array<UniChar> = keyMapping.map(type: type, event: event);
 
-        print(symbols)
-
-        if symbols.characters.count == 0 {
-            print("Keep it")
+        if symbols.count == 0 {
+            // print("Keep it")
             return Unmanaged.passUnretained(event)
-        } else if symbols.characters.count == 1 {
-            self.pressKey(symbol: symbols)
-        } else if symbols.characters.count > 1 {
-            for char in symbols.characters {
-                self.pressKey(symbol: String(char))
+        } else if symbols.count > 0 {
+            for symbol in symbols {
+                self.pressKey(symbol: symbol)
             }
         }
 
         return nil
     }
-
-    // func keyUp(_ event: CGEvent) -> Unmanaged<CGEvent>? {
-    //     self.keyCode = nil
-    //
-    //     if hasConvertedEvent(event) {
-    //         if let event = getConvertedEvent(event) {
-    //             return Unmanaged.passUnretained(event)
-    //         }
-    //         return nil
-    //     }
-    //
-    //     return Unmanaged.passUnretained(event)
-    // }
-    //
-    // func modifierKeyDown(_ event: CGEvent) -> Unmanaged<CGEvent>? {
-    //     #if DEBUG
-    //         print(KeyboardShortcut(event).toString())
-    //     #endif
-    //
-    //     self.keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
-    //
-    //     return Unmanaged.passUnretained(event)
-    // }
-    //
-    // func modifierKeyUp(_ event: CGEvent) -> Unmanaged<CGEvent>? {
-    //     // if self.keyCode == CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode)) {
-    //     //     if let convertedEvent = getConvertedEvent(event) {
-    //     //         KeyboardShortcut(convertedEvent).postEvent()
-    //     //     }
-    //     // }
-    //
-    //     self.keyCode = nil
-    //
-    //     return Unmanaged.passUnretained(event)
-    // }
-
-    // func hasConvertedEvent(_ event: CGEvent, keyCode: CGKeyCode? = nil, keyDown: Bool = false) -> Bool {
-        // let event = event.type.rawValue == UInt32(NX_SYSDEFINED) ?
-        //     CGEvent(keyboardEventSource: nil, virtualKey: 0, keyDown: keyDown)! : event
-        //
-        // let shortcht = KeyboardShortcut(event)
-        //
-        // if let mappingList = shortcutList[keyCode ?? shortcht.keyCode] {
-        //     for mappings in mappingList {
-        //         if shortcht.isCover(mappings.input) {
-        //             hasConvertedEventLog = mappings
-        //             return true
-        //         }
-        //     }
-        // }
-        // hasConvertedEventLog = nil
-        //     return true
-    // }
-    // func getConvertedEvent(_ event: CGEvent, keyCode: CGKeyCode? = nil, keyDown: Bool = false) -> CGEvent? {
-        // let event = event.type.rawValue == UInt32(NX_SYSDEFINED) ?
-        //     CGEvent(keyboardEventSource: nil, virtualKey: 0, keyDown: keyDown)! : event
-        //
-        // let shortcht = KeyboardShortcut(event)
-        //
-        // func getEvent(_ mappings: KeyMapping) -> CGEvent? {
-        //     if mappings.output.keyCode == 999 {
-        //         // 999 is Disable
-        //         return nil
-        //     }
-        //
-        //     event.setIntegerValueField(.keyboardEventKeycode, value: Int64(mappings.output.keyCode))
-        //     event.flags = CGEventFlags(
-        //         rawValue: (event.flags.rawValue & ~mappings.input.flags.rawValue) | mappings.output.flags.rawValue
-        //     )
-        //
-        //     return event
-        // }
-        //
-        // if let mappingList = shortcutList[keyCode ?? shortcht.keyCode] {
-        //     if let mappings = hasConvertedEventLog,
-        //         shortcht.isCover(mappings.input) {
-        //
-        //         return getEvent(mappings)
-        //     }
-        //     for mappings in mappingList {
-        //         if shortcht.isCover(mappings.input) {
-        //             return getEvent(mappings)
-        //         }
-        //     }
-        // }
-        // return keyMapping.map(event: event)
-    // }
 }
-
-// let modifierMasks: [CGKeyCode: CGEventFlags] = [
-//     54: CGEventFlags.maskCommand,
-//     55: CGEventFlags.maskCommand,
-//     56: CGEventFlags.maskShift,
-//     60: CGEventFlags.maskShift,
-//     59: CGEventFlags.maskControl,
-//     62: CGEventFlags.maskControl,
-//     58: CGEventFlags.maskAlternate,
-//     61: CGEventFlags.maskAlternate,
-//     63: CGEventFlags.maskSecondaryFn,
-//     57: CGEventFlags.maskAlphaShift
-// ]
