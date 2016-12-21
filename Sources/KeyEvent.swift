@@ -37,14 +37,14 @@ class KeyEvent: NSObject {
         let eventMaskList = [
             CGEventType.keyDown.rawValue,
             CGEventType.keyUp.rawValue,
-            CGEventType.flagsChanged.rawValue,
+            // CGEventType.flagsChanged.rawValue,
             CGEventType.leftMouseDown.rawValue,
             CGEventType.leftMouseUp.rawValue,
             CGEventType.rightMouseDown.rawValue,
             CGEventType.rightMouseUp.rawValue,
             CGEventType.otherMouseDown.rawValue,
             CGEventType.otherMouseUp.rawValue,
-            CGEventType.scrollWheel.rawValue,
+            // CGEventType.scrollWheel.rawValue,
             // UInt32(NX_SYSDEFINED) // Media key Event
         ]
         var eventMask: UInt32 = 0
@@ -81,26 +81,22 @@ class KeyEvent: NSObject {
     }
 
     func eventCallback(proxy: CGEventTapProxy, type: CGEventType, event: CGEvent) -> Unmanaged<CGEvent>? {
+
+        // Gate way to exit in case we get our whole keyboard stuck
         let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
         if keyCode == 12 {
             print("Exit on purpose")
             exit(0)
         }
 
+        // Prevent infinitive loop when sending keys programmatically
         if (event.flags.rawValue & self.VNK_MAGIC_NUMBER != 0) {
             return Unmanaged.passUnretained(event);
         }
 
+        print("A");
+
         switch type {
-        // case CGEventType.flagsChanged:
-        //     let keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
-        //
-        //     if modifierMasks[keyCode] == nil {
-        //         return Unmanaged.passUnretained(event)
-        //     }
-        //     return event.flags.rawValue & modifierMasks[keyCode]!.rawValue != 0 ?
-        //         modifierKeyDown(event) : modifierKeyUp(event)
-        //
         case CGEventType.keyDown:
             return keyDown(event)
 
@@ -121,8 +117,6 @@ class KeyEvent: NSObject {
         #endif
 
         self.keyCode = nil
-
-        print("A");
 
         // if hasConvertedEvent(event) {
         //     if let event = getConvertedEvent(event) {
