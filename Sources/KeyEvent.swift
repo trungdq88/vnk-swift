@@ -1,7 +1,5 @@
 import Cocoa
 
-var exclusionAppsDict: [String: String] = [:]
-
 class KeyEvent: NSObject {
     var keyCode: CGKeyCode? = nil
     // var hasConvertedEventLog: KeyMapping? = nil
@@ -204,5 +202,3 @@ let modifierMasks: [CGKeyCode: CGEventFlags] = [
     63: CGEventFlags.maskSecondaryFn,
     57: CGEventFlags.maskAlphaShift
 ]
-
-_ = KeyEvent()
