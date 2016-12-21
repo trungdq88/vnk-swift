@@ -1,6 +1,7 @@
 import Cocoa
 
 class KeyEvent: NSObject {
+    var VNK_MAGIC_NUMBER: UInt64 = 536870912;
     var keyCode: CGKeyCode? = nil
     // var hasConvertedEventLog: KeyMapping? = nil
 
@@ -58,21 +59,31 @@ class KeyEvent: NSObject {
     }
 
     func eventCallback(proxy: CGEventTapProxy, type: CGEventType, event: CGEvent) -> Unmanaged<CGEvent>? {
+        let keyCode = event.getIntegerValueField(.keyboardEventKeycode)
+        if keyCode == 12 {
+            print("Exit on purpose")
+            exit(0)
+        }
+
+        if (event.flags.rawValue & self.VNK_MAGIC_NUMBER != 0) {
+            return Unmanaged.passUnretained(event);
+        }
+
         switch type {
-        case CGEventType.flagsChanged:
-            let keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
-
-            if modifierMasks[keyCode] == nil {
-                return Unmanaged.passUnretained(event)
-            }
-            return event.flags.rawValue & modifierMasks[keyCode]!.rawValue != 0 ?
-                modifierKeyDown(event) : modifierKeyUp(event)
-
+        // case CGEventType.flagsChanged:
+        //     let keyCode = CGKeyCode(event.getIntegerValueField(.keyboardEventKeycode))
+        //
+        //     if modifierMasks[keyCode] == nil {
+        //         return Unmanaged.passUnretained(event)
+        //     }
+        //     return event.flags.rawValue & modifierMasks[keyCode]!.rawValue != 0 ?
+        //         modifierKeyDown(event) : modifierKeyUp(event)
+        //
         case CGEventType.keyDown:
             return keyDown(event)
 
-        case CGEventType.keyUp:
-            return keyUp(event)
+        // case CGEventType.keyUp:
+        //     return keyUp(event)
 
         default:
             self.keyCode = nil
@@ -89,13 +100,28 @@ class KeyEvent: NSObject {
 
         self.keyCode = nil
 
-        if hasConvertedEvent(event) {
-            if let event = getConvertedEvent(event) {
-                return Unmanaged.passUnretained(event)
-            }
-            return nil
-        }
+        print("A");
 
+        // if hasConvertedEvent(event) {
+        //     if let event = getConvertedEvent(event) {
+        //         return Unmanaged.passUnretained(event)
+        //     }
+        //     return nil
+        // }
+        //
+        let eventKeyDown = CGEvent(keyboardEventSource: nil, virtualKey: 1, keyDown: true)!
+        let eventKeyUp = CGEvent(keyboardEventSource: nil, virtualKey: 1, keyDown: false)!
+        eventKeyDown.flags = CGEventFlags(
+           rawValue: eventKeyDown.flags.rawValue | self.VNK_MAGIC_NUMBER
+        )
+        eventKeyUp.flags = CGEventFlags(
+           rawValue: eventKeyUp.flags.rawValue | self.VNK_MAGIC_NUMBER
+        )
+        let char:Array<UniChar> = Array("đế".utf16);
+        eventKeyDown.keyboardSetUnicodeString(stringLength: 2, unicodeString: char)
+        eventKeyUp.keyboardSetUnicodeString(stringLength: 2, unicodeString: char)
+        eventKeyDown.post(tap: CGEventTapLocation.cghidEventTap)
+        eventKeyUp.post(tap: CGEventTapLocation.cghidEventTap)
         return Unmanaged.passUnretained(event)
     }
 
@@ -149,7 +175,7 @@ class KeyEvent: NSObject {
         //     }
         // }
         // hasConvertedEventLog = nil
-        return false
+        return true
     }
     func getConvertedEvent(_ event: CGEvent, keyCode: CGKeyCode? = nil, keyDown: Bool = false) -> CGEvent? {
         // let event = event.type.rawValue == UInt32(NX_SYSDEFINED) ?
@@ -183,7 +209,7 @@ class KeyEvent: NSObject {
         //         }
         //     }
         // }
-        return nil
+        return keyMapping.map(event: event)
     }
 }
 
