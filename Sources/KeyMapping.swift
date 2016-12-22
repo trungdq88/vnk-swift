@@ -13,9 +13,6 @@ class KeyMapping : NSObject {
         case CGEventType.keyDown:
             return keyDown(event)
 
-        // case CGEventType.keyUp:
-        //     return keyUp(event)
-
         default:
             return []
         }
@@ -74,27 +71,35 @@ class KeyMapping : NSObject {
         return []
     }
 
+    /**
+     * Return a modification (an array of what keys to press) after `currentChar` is pressed
+     * Ex:
+         kBuffer: [t i e n g]
+         currentChar: s (Telex)
+         Returns: [← ← ← é n g]
+
+         Return empty array [] if no modification is needed
+     */
     func transformBuffer(char: UniChar) -> Array<UniChar> {
-        if let controlMap = inputMethod.getControlMap(char: char) {
-            print(controlMap);
-            var backspaceChars: Array<UniChar> = []
-            var repeatChars: Array<UniChar> = []
-            var isModified = false
-            for index in kBuffer.indices {
-                let currentChar = kBuffer[index];
-                if let posibleMappedChar = controlMap[currentChar] {
-                    kBuffer[index] = posibleMappedChar;
-                    isModified = true
-                }
-                if isModified {
-                    repeatChars.append(kBuffer[index])
-                    backspaceChars.append(Array(BACKSPACE_SPECIAL_CHAR.utf16)[0])
-                }
-            }
-            return backspaceChars + repeatChars
+        guard let controlMap = inputMethod.getControlMap(char: char) else {
+            print("map not found for char \(char)");
+            return []
         }
-        print("map not found for char \(char)");
-        return []
+        var backspaceChars: Array<UniChar> = []
+        var repeatChars: Array<UniChar> = []
+        var isModified = false
+        for index in kBuffer.indices {
+            let currentChar = kBuffer[index];
+            if let posibleMappedChar = controlMap[currentChar] {
+                kBuffer[index] = posibleMappedChar;
+                isModified = true
+            }
+            if isModified {
+                repeatChars.append(kBuffer[index])
+                backspaceChars.append(Array(BACKSPACE_SPECIAL_CHAR.utf16)[0])
+            }
+        }
+        return backspaceChars + repeatChars
     }
 
 }
