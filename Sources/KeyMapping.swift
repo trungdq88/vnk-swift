@@ -7,12 +7,12 @@ class KeyMapping : NSObject {
     let BUFFERABLE_CHARS = Array("pyfgcrlaoeuidhtnsqjkxbmwvzPYFGCRLAOEUIDHTNSQJKXBMWVZ".utf16)
     let MAX_BUFFER_LENGTH = 7;
 
-    let SET_A = Array("aáàảãạăắằẳẵặâấầẩẫậ".utf16)
-    let SET_O = Array("oóòỏõọôốồổỗộơớờởỡợ".utf16)
-    let SET_E = Array("eéèẻẽẹêếềểễệ".utf16)
-    let SET_U = Array("uúùủũụưứừửữự".utf16)
-    let SET_I = Array("iíìỉĩị".utf16)
-    let SET_Y = Array("yýỳỷỹỵ".utf16)
+    let SET_A = Array("AÁÀẢÃẠĂẮẰẲẴẶÂẤẦẨẪẬaáàảãạăắằẳẵặâấầẩẫậ".utf16)
+    let SET_O = Array("OÓÒỎÕỌÔỐỒỔỖỘƠỚỜỞỠỢoóòỏõọôốồổỗộơớờởỡợ".utf16)
+    let SET_E = Array("EÉÈẺẼẸÊẾỀỂỄỆeéèẻẽẹêếềểễệ".utf16)
+    let SET_U = Array("UÚÙỦŨỤƯỨỪỬỮỰuúùủũụưứừửữự".utf16)
+    let SET_I = Array("IÍÌỈĨỊiíìỉĩị".utf16)
+    let SET_Y = Array("YÝỲỶỸỴyýỳỷỹỵ".utf16)
 
     var kBuffer:Array<UniChar> = []
     func map(type: CGEventType, event: CGEvent) -> Array<UniChar> {
