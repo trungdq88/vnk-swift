@@ -7,6 +7,13 @@ class KeyMapping : NSObject {
     let BUFFERABLE_CHARS = Array("pyfgcrlaoeuidhtnsqjkxbmwvzPYFGCRLAOEUIDHTNSQJKXBMWVZ".utf16)
     let MAX_BUFFER_LENGTH = 7;
 
+    let SET_A = Array("aáàảãạăắằẳẵặâấầẩẫậ".utf16)
+    let SET_O = Array("oóòỏõọôốồổỗộơớờởỡợ".utf16)
+    let SET_E = Array("eéèẻẽẹêếềểễệ".utf16)
+    let SET_U = Array("uúùủũụưứừửữự".utf16)
+    let SET_I = Array("iíìỉĩị".utf16)
+    let SET_Y = Array("yýỳỷỹỵ".utf16)
+
     var kBuffer:Array<UniChar> = []
     func map(type: CGEventType, event: CGEvent) -> Array<UniChar> {
         switch type {
@@ -71,6 +78,63 @@ class KeyMapping : NSObject {
         return []
     }
 
+    func shouldWeMapThisChar(_ index: Int) -> Bool {
+        let currentChar = kBuffer[index]
+
+        // If current char is d or D, let it go, too
+        if currentChar == g("d") {
+            return true
+        }
+
+        // If this is NOT the last char
+        if index < kBuffer.count - 1 {
+            let nextChar = kBuffer[index + 1]
+            // Handle uo
+            if SET_U.contains(currentChar) && SET_O.contains(nextChar) {
+                return false;
+            }
+            // Handle oa
+            if SET_O.contains(currentChar) && SET_A.contains(nextChar) {
+                return false;
+            }
+            // Handle ie
+            if SET_I.contains(currentChar) && SET_E.contains(nextChar) {
+                return false;
+            }
+        }
+
+        // If this is NOT the first char
+        if index > 0 {
+            let prevChar = kBuffer[index - 1]
+            // Handle oi
+            if SET_O.contains(prevChar) && SET_I.contains(currentChar) {
+                return false;
+            }
+            // Handle ao
+            if SET_A.contains(prevChar) && SET_O.contains(currentChar) {
+                return false;
+            }
+            // Handle ai
+            if SET_A.contains(prevChar) && SET_I.contains(currentChar) {
+                return false;
+            }
+            // Handle eu
+            if SET_E.contains(prevChar) && SET_U.contains(currentChar) {
+                return false;
+            }
+            // Handle ua
+            if SET_U.contains(prevChar) && SET_A.contains(currentChar) {
+                return false;
+            }
+            // Handle uu
+            if SET_U.contains(prevChar) && SET_U.contains(currentChar) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     /**
      * Return a modification (an array of what keys to press) after `currentChar` is pressed
      * Ex:
@@ -90,9 +154,11 @@ class KeyMapping : NSObject {
         var isModified = false
         for index in kBuffer.indices {
             let currentChar = kBuffer[index];
-            if let posibleMappedChar = controlMap[currentChar] {
-                kBuffer[index] = posibleMappedChar;
-                isModified = true
+            if shouldWeMapThisChar(index) {
+                if let posibleMappedChar = controlMap[currentChar] {
+                    kBuffer[index] = posibleMappedChar;
+                    isModified = true
+                }
             }
             if isModified {
                 repeatChars.append(kBuffer[index])

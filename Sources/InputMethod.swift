@@ -1,13 +1,13 @@
 import Cocoa
 
 class InputMethod : NSObject {
-    let DAU_SAC = g("1");
-    let DAU_HUYEN = g("2");
+    let DAU_SAC = g("/");
+    let DAU_HUYEN = g(",");
     let DAU_HOI = g("3");
     let DAU_NGA = g("4");
-    let DAU_NANG = g("5");
+    let DAU_NANG = g(".");
     let DAU_RAU = g("8");
-    let DAU_MU = g("6");
+    let DAU_MU = g("0");
     let DAU_NGANG = g("9");
 
     var CONTROL_CHAR: [UniChar: [UniChar: UniChar]] = [:]
