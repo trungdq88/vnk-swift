@@ -1,5 +1,8 @@
 import Cocoa
 
+/**
+ * Stateful buffer container with grammar logic
+ */
 class KeyMapping : NSObject {
     let BACKSPACE_SPECIAL_CHAR: String = "←";
     let ACCEPTED_CHARS = Array("1234567890[]',.pyfgcrl/=\\aoeuidhtns-;qjkxbmwvzPYFGCRLAOEUIDHTNSQJKXBMWVZ ".utf16)
@@ -39,7 +42,11 @@ class KeyMapping : NSObject {
 
     func keyDown(_ event: CGEvent) -> Array<UniChar> {
         let char = getEventChar(event: event)
+        return receiveChar(char)
+    }
 
+    // Separate this func for testing
+    func receiveChar(_ char: UniChar) -> Array<UniChar> {
         // Exclude useless chars
         if !ACCEPTED_CHARS.contains(char) {
             kBuffer.removeAll()
