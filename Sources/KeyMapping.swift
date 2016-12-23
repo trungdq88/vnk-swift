@@ -13,6 +13,7 @@ class KeyMapping : NSObject {
     let SET_U = Array("UÚÙỦŨỤƯỨỪỬỮỰuúùủũụưứừửữự".utf16)
     let SET_I = Array("IÍÌỈĨỊiíìỉĩị".utf16)
     let SET_Y = Array("YÝỲỶỸỴyýỳỷỹỵ".utf16)
+    let SET_Q = Array("Qq".utf16)
 
     var kBuffer:Array<UniChar> = []
     func map(type: CGEventType, event: CGEvent) -> Array<UniChar> {
@@ -123,7 +124,6 @@ class KeyMapping : NSObject {
             SET_E.contains(nextNextChar) {
                 return false;
             }
-
         }
 
         // If this is NOT the first char
@@ -147,6 +147,17 @@ class KeyMapping : NSObject {
             }
             // Handle ua
             if SET_U.contains(prevChar) && SET_A.contains(currentChar) {
+                // qua
+                if index > 1 {
+                    let prevPrevChar = kBuffer[index - 2]
+                    if SET_Q.contains(prevPrevChar) {
+                        return true
+                    }
+                }
+                // Letter a at position 4 (chủa
+                if index > 2 && controlChar == inputMethod.DAU_MU {
+                    return true
+                }
                 return false;
             }
             // Handle uu
@@ -171,6 +182,10 @@ class KeyMapping : NSObject {
             }
             // Handle eo
             if SET_E.contains(prevChar) && SET_O.contains(currentChar) {
+                return false;
+            }
+            // Handle qu
+            if SET_Q.contains(prevChar) && SET_U.contains(currentChar) {
                 return false;
             }
         }
