@@ -9,9 +9,9 @@ class KeyMappingTests: XCTestCase {
     }
 
     func testExample() {
-        // let keyMapping = KeyMapping()
+        let keyMapping = KeyMapping()
         // let output = keyMapping.receiveChar(Array("a".utf16)[0])
-        XCTAssert(true, "PASS")
+        XCTAssertNotNil(keyMapping , "PASS")
         // XCTAssertEqual(output, [], "should returns empty array")
     }
 }
