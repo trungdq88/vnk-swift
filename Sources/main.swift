@@ -6,4 +6,5 @@ func g(_ c: String) -> UniChar {
 
 var keyMapping = KeyMapping()
 var inputMethod = InputMethod()
+_ = KeyMappingTests()
 _ = KeyEvent()
