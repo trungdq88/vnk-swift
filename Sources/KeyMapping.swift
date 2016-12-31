@@ -18,7 +18,16 @@ class KeyMapping : NSObject {
     let SET_Y = Array("YÝỲỶỸỴyýỳỷỹỵ".utf16)
     let SET_Q = Array("Qq".utf16)
 
+    public var verbose = true
+
     var kBuffer:Array<UniChar> = []
+
+    func log(_ string: Any) {
+        if self.verbose {
+            print(string)
+        }
+    }
+
     func map(type: CGEventType, event: CGEvent) -> Array<UniChar> {
         switch type {
         case CGEventType.keyDown:
@@ -28,6 +37,7 @@ class KeyMapping : NSObject {
             return []
         }
     }
+
     func getEventChar(event: CGEvent) -> UniChar {
         let maxStringLength:Int = 1;
         let actualStringLength = UnsafeMutablePointer<Int>.allocate(capacity: 1);
@@ -61,28 +71,28 @@ class KeyMapping : NSObject {
 
         // Process here
         let modifierChars = transformBuffer(char: char);
-        print(modifierChars);
+        log(modifierChars);
         if modifierChars.count > 0 {
             return modifierChars; // Ex: ← â
         }
 
         // Clear all buffer if current char is not bufferable
         if !BUFFERABLE_CHARS.contains(char) {
-            print("Clear buffer because invalid char")
+            log("Clear buffer because invalid char")
             kBuffer.removeAll()
             return []
         }
 
         if kBuffer.count > MAX_BUFFER_LENGTH {
-            print("Clear buffer because more than 1 char")
+            log("Clear buffer because more than 1 char")
             kBuffer.removeAll()
         }
 
-        print("Append to buffer")
+        log("Append to buffer")
         kBuffer.append(char)
-        print(kBuffer)
+        log(kBuffer)
 
-        // print(kBuffer)
+        // log(kBuffer)
         return []
     }
 
@@ -211,7 +221,7 @@ class KeyMapping : NSObject {
      */
     func transformBuffer(char: UniChar) -> Array<UniChar> {
         guard let controlMap = inputMethod.getControlMap(char: char) else {
-            print("map not found for char \(char)");
+            log("map not found for char \(char)");
             return []
         }
         var backspaceChars: Array<UniChar> = []
