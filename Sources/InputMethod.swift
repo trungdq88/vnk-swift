@@ -1,15 +1,15 @@
 import Cocoa
 
 class InputMethod : NSObject {
-    let DAU_SAC = g("1");
+    let DAU_SAC = g("4");
     let DAU_HUYEN = g("2");
     let DAU_HOI = g("3");
-    let DAU_NGA = g("4");
-    let DAU_NANG = g("5");
-    let DAU_MU = g("6");
-    let DAU_RAU = g("7");
-    let DAU_RAU_2 = g("8");
-    let DAU_NGANG = g("9");
+    let DAU_NGA = g("5");
+    let DAU_NANG = g("9");
+    let DAU_MU = g("0");
+    let DAU_RAU = g("8");
+    let DAU_NGANG = g("d");
+    let DAU_NGANG_2 = g("D");
 
     var CONTROL_CHAR: [UniChar: [UniChar: UniChar]] = [:]
 
@@ -176,8 +176,7 @@ class InputMethod : NSObject {
                 g("Ú"): g("Ứ"), g("Ù"): g("Ừ"), g("Ủ"): g("Ử"), g("Ũ"): g("Ữ"), g("Ụ"): g("Ự"),
                 g("o"): g("ơ"), g("ó"): g("ớ"), g("ò"): g("ờ"),
                 g("O"): g("Ơ"), g("Ó"): g("Ớ"), g("Ò"): g("Ờ"),
-            ],
-            DAU_RAU_2: [
+
                 g("a"): g("ă"), g("á"): g("ắ"), g("à"): g("ằ"), g("ả"): g("ẳ"), g("ã"): g("ẵ"),
                 g("ạ"): g("ặ"), g("â"): g("ă"), g("ấ"): g("ắ"), g("ầ"): g("ằ"), g("ẩ"): g("ẳ"),
                 g("ẫ"): g("ẵ"), g("ậ"): g("ặ"),
@@ -186,6 +185,10 @@ class InputMethod : NSObject {
                 g("Ẫ"): g("Ẵ"), g("Ậ"): g("Ặ"),
             ],
             DAU_NGANG: [
+                g("d"): g("đ"),
+                g("D"): g("Đ"),
+            ],
+            DAU_NGANG_2: [
                 g("d"): g("đ"),
                 g("D"): g("Đ"),
             ],

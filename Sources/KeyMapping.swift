@@ -78,7 +78,7 @@ class KeyMapping : NSObject {
 
         // Clear all buffer if current char is not bufferable
         if !BUFFERABLE_CHARS.contains(char) {
-            log("Clear buffer because invalid char")
+            log("Clear buffer because invalid char: \(char)")
             kBuffer.removeAll()
             return []
         }
@@ -114,6 +114,10 @@ class KeyMapping : NSObject {
                 }
                 return false;
             }
+            // Handle ua
+            if SET_U.contains(currentChar) && SET_A.contains(nextChar) {
+                return false;
+            }
             // Handle oa
             if SET_O.contains(currentChar) && SET_A.contains(nextChar) {
                 return false;
@@ -128,6 +132,10 @@ class KeyMapping : NSObject {
             }
             // Handle io
             if SET_I.contains(currentChar) && SET_O.contains(nextChar) {
+                return false;
+            }
+            // Handle ia
+            if SET_I.contains(currentChar) && SET_A.contains(nextChar) {
                 return false;
             }
         }
@@ -160,21 +168,6 @@ class KeyMapping : NSObject {
             }
             // Handle eu
             if SET_E.contains(prevChar) && SET_U.contains(currentChar) {
-                return false;
-            }
-            // Handle ua
-            if SET_U.contains(prevChar) && SET_A.contains(currentChar) {
-                // qua
-                if index > 1 {
-                    let prevPrevChar = kBuffer[index - 2]
-                    if SET_Q.contains(prevPrevChar) {
-                        return true
-                    }
-                }
-                // Letter a at position 4 (chủa
-                if index > 2 && controlChar == inputMethod.DAU_MU {
-                    return true
-                }
                 return false;
             }
             // Handle uu

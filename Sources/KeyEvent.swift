@@ -104,6 +104,6 @@ class KeyEvent: NSObject {
             }
         }
 
-        return nil
+        return Unmanaged.passUnretained(event)
     }
 }
